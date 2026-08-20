@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة المستخدمين | لوحة التحكم</title>
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="admin-sidebar" id="sidebar">
+    <div class="admin-sidebar__brand"><span class="mark">🛍️</span> إدارة المتجر</div>
+    <a href="index.html">📊 لوحة التحكم</a>
+    <a href="products.html">📦 المنتجات</a>
+    <a href="categories.html">🗂️ التصنيفات</a>
+    <a href="orders.html">🧾 الطلبات</a>
+    <a href="users.html" class="active">👥 المستخدمون</a>
+    <a href="banners.html">🖼️ البانرات والعروض</a>
+    <a href="settings.html">⚙️ إعدادات المتجر</a>
+    <div class="admin-sidebar__foot"><button class="btn btn--ghost" style="width:100%" id="logout-btn">تسجيل الخروج</button></div>
+  </aside>
+
+  <div>
+    <header class="admin-topbar">
+      <div class="flex items-center gap-12"><button class="admin-topbar__burger" id="burger">☰</button><h1>إدارة المستخدمين</h1></div>
+      <div class="admin-topbar__actions"><button class="admin-icon-btn" data-theme-toggle>🌙</button></div>
+    </header>
+    <main class="admin-main">
+      <div class="panel">
+        <div class="panel__head">
+          <div class="search-input"><span>🔍</span><input type="text" id="search-users" placeholder="ابحث بالاسم أو البريد أو الهاتف..."></div>
+        </div>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الهاتف</th><th>عدد الطلبات</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="modal-overlay" id="user-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="user-modal-close">✕</button>
+    <h3 id="user-modal-title">طلبات المستخدم</h3>
+    <div id="user-modal-body"></div>
+  </div>
+</div>
+
+<script type="module" src="../store/js/main.js"></script>
+<script type="module" src="js/admin-users.js"></script>
+<script type="module">
+  import { adminLogout } from "./js/admin-auth.js";
+  document.getElementById("logout-btn").addEventListener("click", adminLogout);
+  document.getElementById("burger").addEventListener("click", () => document.getElementById("sidebar").classList.toggle("open"));
+</script>
+</body>
+</html>

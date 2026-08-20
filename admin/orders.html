@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة الطلبات | لوحة التحكم</title>
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="admin-sidebar" id="sidebar">
+    <div class="admin-sidebar__brand"><span class="mark">🛍️</span> إدارة المتجر</div>
+    <a href="index.html">📊 لوحة التحكم</a>
+    <a href="products.html">📦 المنتجات</a>
+    <a href="categories.html">🗂️ التصنيفات</a>
+    <a href="orders.html" class="active">🧾 الطلبات</a>
+    <a href="users.html">👥 المستخدمون</a>
+    <a href="banners.html">🖼️ البانرات والعروض</a>
+    <a href="settings.html">⚙️ إعدادات المتجر</a>
+    <div class="admin-sidebar__foot"><button class="btn btn--ghost" style="width:100%" id="logout-btn">تسجيل الخروج</button></div>
+  </aside>
+
+  <div>
+    <header class="admin-topbar">
+      <div class="flex items-center gap-12"><button class="admin-topbar__burger" id="burger">☰</button><h1>إدارة الطلبات</h1></div>
+      <div class="admin-topbar__actions"><button class="admin-icon-btn" data-theme-toggle>🌙</button></div>
+    </header>
+    <main class="admin-main">
+      <div class="panel">
+        <div class="panel__head">
+          <div class="flex gap-12" style="flex-wrap:wrap">
+            <div class="search-input"><span>🔍</span><input type="text" id="search-orders" placeholder="ابحث بالاسم أو الهاتف أو رقم الطلب..."></div>
+            <select id="filter-status" class="field" style="padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text)">
+              <option value="">كل الحالات</option>
+              <option value="pending">قيد المراجعة</option>
+              <option value="confirmed">تم التأكيد</option>
+              <option value="processing">جاري التجهيز</option>
+              <option value="shipped">تم الشحن</option>
+              <option value="delivered">تم التسليم</option>
+              <option value="cancelled">تم الإلغاء</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>رقم الطلب</th><th>العميل</th><th>الهاتف</th><th>التاريخ</th><th>عدد المنتجات</th><th>الإجمالي</th><th>الحالة</th><th></th></tr></thead>
+            <tbody id="orders-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="modal-overlay" id="order-modal">
+  <div class="modal-box">
+    <button class="modal-close" id="order-modal-close">✕</button>
+    <h3 id="order-modal-title">تفاصيل الطلب</h3>
+    <div id="order-modal-body"></div>
+  </div>
+</div>
+
+<script type="module" src="../store/js/main.js"></script>
+<script type="module" src="js/admin-orders.js"></script>
+<script type="module">
+  import { adminLogout } from "./js/admin-auth.js";
+  document.getElementById("logout-btn").addEventListener("click", adminLogout);
+  document.getElementById("burger").addEventListener("click", () => document.getElementById("sidebar").classList.toggle("open"));
+</script>
+</body>
+</html>
