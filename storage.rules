@@ -1,0 +1,44 @@
+rules_version = '2';
+
+// ============================================================================
+// Storage Security Rules — قواعد أمان تخزين الصور
+// انسخ هذا الملف إلى: Firebase Console → Storage → Rules
+// ============================================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null &&
+             firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
+    }
+
+    // صور المنتجات: قراءة عامة، رفع/حذف للأدمن فقط، وبحد أقصى 5 ميجابايت لكل صورة
+    match /products/{productId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && request.resource.size < 5 * 1024 * 1024
+                      && request.resource.contentType.matches('image/.*');
+    }
+
+    // صور التصنيفات
+    match /categories/{categoryId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && request.resource.size < 5 * 1024 * 1024
+                      && request.resource.contentType.matches('image/.*');
+    }
+
+    // صور البانرات
+    match /banners/{bannerId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && request.resource.size < 5 * 1024 * 1024
+                      && request.resource.contentType.matches('image/.*');
+    }
+
+    // شعار المتجر وملفات الإعدادات العامة
+    match /settings/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && request.resource.size < 3 * 1024 * 1024
+                      && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

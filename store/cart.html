@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سلة المشتريات | المتجر</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="css/cart.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="container header__top">
+    <button class="icon-btn nav__toggle" data-nav-toggle aria-label="القائمة">☰</button>
+    <a href="index.html" class="brand"><span class="brand__mark">🛍️</span><span class="brand__text">المتجر</span></a>
+    <div class="search-bar"><input type="text" id="global-search" placeholder="ابحث عن منتج..."><button id="global-search-btn">🔍</button></div>
+    <div class="header__actions">
+      <button class="icon-btn" data-theme-toggle>🌙</button>
+      <a href="cart.html" class="icon-btn">🛒<span class="badge" data-cart-count>0</span></a>
+      <div data-auth-area></div>
+    </div>
+  </div>
+  <nav class="nav"><div class="container"><ul class="nav__menu" data-nav-menu>
+    <li><a href="index.html">الرئيسية</a></li><li><a href="products.html">كل المنتجات</a></li>
+  </ul></div></nav>
+</header>
+
+<main>
+  <div class="container section">
+    <h2 style="margin-top:0">سلة المشتريات</h2>
+    <div class="cart-layout">
+      <div id="cart-list"></div>
+      <div class="summary-box" id="cart-summary" style="display:none">
+        <h3>ملخص الطلب</h3>
+        <div class="summary-row"><span>المجموع الفرعي</span><span data-sum-subtotal>0</span></div>
+        <div class="summary-row"><span>الشحن (يُحسب عند إتمام الطلب)</span><span data-sum-shipping>0</span></div>
+        <div class="summary-row summary-row--total"><span>الإجمالي</span><span data-sum-total>0</span></div>
+        <a href="checkout.html" class="btn btn--primary btn--block" style="margin-top:16px">إتمام الطلب</a>
+        <a href="products.html" class="btn btn--ghost btn--block" style="margin-top:10px">متابعة التسوق</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer"><div class="container"><div class="footer__bottom">© 2026 المتجر. جميع الحقوق محفوظة.</div></div></footer>
+
+<script type="module" src="js/main.js"></script>
+<script type="module" src="js/cart.js"></script>
+<script type="module">
+  function goSearch() {
+    const val = document.getElementById("global-search").value.trim();
+    location.href = "products.html" + (val ? `?q=${encodeURIComponent(val)}` : "");
+  }
+  document.getElementById("global-search-btn").addEventListener("click", goSearch);
+  document.getElementById("global-search").addEventListener("keydown", (e) => { if (e.key === "Enter") goSearch(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم | المتجر</title>
+<link rel="stylesheet" href="css/admin.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="admin-sidebar" id="sidebar">
+    <div class="admin-sidebar__brand"><span class="mark">🛍️</span> إدارة المتجر</div>
+    <a href="index.html" class="active">📊 لوحة التحكم</a>
+    <a href="products.html">📦 المنتجات</a>
+    <a href="categories.html">🗂️ التصنيفات</a>
+    <a href="orders.html">🧾 الطلبات</a>
+    <a href="users.html">👥 المستخدمون</a>
+    <a href="banners.html">🖼️ البانرات والعروض</a>
+    <a href="settings.html">⚙️ إعدادات المتجر</a>
+    <div class="admin-sidebar__foot">
+      <button class="btn btn--ghost" style="width:100%" id="logout-btn">تسجيل الخروج</button>
+    </div>
+  </aside>
+
+  <div>
+    <header class="admin-topbar">
+      <div class="flex items-center gap-12">
+        <button class="admin-topbar__burger" id="burger">☰</button>
+        <h1>لوحة التحكم</h1>
+      </div>
+      <div class="admin-topbar__actions">
+        <button class="admin-icon-btn" data-theme-toggle>🌙</button>
+        <a href="../store/index.html" target="_blank" class="btn btn--ghost btn--sm">عرض المتجر ↗</a>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <div class="stat-grid">
+        <div class="stat-card stat-card--1"><div class="stat-card__icon">📦</div><div><div class="stat-card__value" id="stat-products">—</div><div class="stat-card__label">إجمالي المنتجات</div></div></div>
+        <div class="stat-card stat-card--2"><div class="stat-card__icon">🧾</div><div><div class="stat-card__value" id="stat-orders">—</div><div class="stat-card__label">إجمالي الطلبات</div></div></div>
+        <div class="stat-card stat-card--3"><div class="stat-card__icon">👥</div><div><div class="stat-card__value" id="stat-users">—</div><div class="stat-card__label">إجمالي المستخدمين</div></div></div>
+        <div class="stat-card stat-card--4"><div class="stat-card__icon">💰</div><div><div class="stat-card__value" id="stat-sales">—</div><div class="stat-card__label">إجمالي المبيعات</div></div></div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card stat-card--2"><div class="stat-card__icon">🆕</div><div><div class="stat-card__value" id="stat-new-orders">—</div><div class="stat-card__label">طلبات جديدة</div></div></div>
+        <div class="stat-card stat-card--3"><div class="stat-card__icon">⏳</div><div><div class="stat-card__value" id="stat-processing-orders">—</div><div class="stat-card__label">قيد التنفيذ</div></div></div>
+        <div class="stat-card stat-card--1"><div class="stat-card__icon">✅</div><div><div class="stat-card__value" id="stat-completed-orders">—</div><div class="stat-card__label">طلبات مكتملة</div></div></div>
+        <div class="stat-card stat-card--4"><div class="stat-card__icon">⚠️</div><div><div class="stat-card__value" id="stat-low-stock">—</div><div class="stat-card__label">منتجات قليلة المخزون</div></div></div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="panel chart-box">
+          <div class="panel__head"><h2>المبيعات آخر 7 أيام</h2></div>
+          <canvas id="salesChart" height="120"></canvas>
+        </div>
+        <div class="panel chart-box">
+          <div class="panel__head"><h2>الأكثر مبيعًا</h2></div>
+          <canvas id="topProductsChart" height="120"></canvas>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head"><h2>آخر الطلبات</h2><a href="orders.html" class="btn btn--ghost btn--sm">عرض الكل</a></div>
+        <div class="mini-list" id="recent-orders"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script type="module" src="../store/js/main.js"></script>
+<script type="module" src="js/dashboard.js"></script>
+<script type="module">
+  import { adminLogout } from "./js/admin-auth.js";
+  document.getElementById("logout-btn").addEventListener("click", adminLogout);
+  document.getElementById("burger").addEventListener("click", () => document.getElementById("sidebar").classList.toggle("open"));
+</script>
+</body>
+</html>

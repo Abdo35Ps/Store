@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إعدادات المتجر | لوحة التحكم</title>
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="admin-sidebar" id="sidebar">
+    <div class="admin-sidebar__brand"><span class="mark">🛍️</span> إدارة المتجر</div>
+    <a href="index.html">📊 لوحة التحكم</a>
+    <a href="products.html">📦 المنتجات</a>
+    <a href="categories.html">🗂️ التصنيفات</a>
+    <a href="orders.html">🧾 الطلبات</a>
+    <a href="users.html">👥 المستخدمون</a>
+    <a href="banners.html">🖼️ البانرات والعروض</a>
+    <a href="settings.html" class="active">⚙️ إعدادات المتجر</a>
+    <div class="admin-sidebar__foot"><button class="btn btn--ghost" style="width:100%" id="logout-btn">تسجيل الخروج</button></div>
+  </aside>
+
+  <div>
+    <header class="admin-topbar">
+      <div class="flex items-center gap-12"><button class="admin-topbar__burger" id="burger">☰</button><h1>إعدادات المتجر</h1></div>
+      <div class="admin-topbar__actions"><button class="admin-icon-btn" data-theme-toggle>🌙</button></div>
+    </header>
+    <main class="admin-main">
+      <form id="settings-form">
+        <div class="panel">
+          <div class="panel__head"><h2>البيانات الأساسية</h2></div>
+          <div class="field-row">
+            <div class="field"><label>اسم المتجر</label><input type="text" id="s-name" required></div>
+            <div class="field"><label>العملة</label><input type="text" id="s-currency" placeholder="ج.م"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>رقم الهاتف</label><input type="tel" id="s-phone"></div>
+            <div class="field"><label>البريد الإلكتروني</label><input type="email" id="s-email"></div>
+          </div>
+          <div class="field"><label>العنوان</label><input type="text" id="s-address"></div>
+          <div class="field"><label>وصف مختصر عن المتجر</label><textarea id="s-description" rows="2"></textarea></div>
+          <div class="field">
+            <label>شعار المتجر (Logo)</label>
+            <div class="upload-box" id="upload-box-logo">📷 اضغط لاختيار الشعار (يحتاج تفعيل Storage)</div>
+            <input type="file" id="s-logo-file" accept="image/*" hidden>
+            <div class="field" style="margin-top:10px">
+              <label>أو الصق رابط صورة (اختياري - يعمل بدون Storage)</label>
+              <div class="flex gap-8">
+                <input type="url" id="s-logo-url" placeholder="https://example.com/logo.png" style="flex:1">
+                <button type="button" class="btn btn--ghost btn--sm" id="add-logo-url-btn">إضافة</button>
+              </div>
+            </div>
+            <div class="img-preview-grid" id="logo-preview"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__head"><h2>الشحن والطلبات</h2></div>
+          <div class="field-row">
+            <div class="field"><label>رسوم الشحن الافتراضية</label><input type="number" id="s-shipping" min="0" step="0.01"></div>
+            <div class="field"><label>الحد الأدنى للطلب</label><input type="number" id="s-min-order" min="0" step="0.01"></div>
+          </div>
+          <div class="field"><label>الشحن مجاني للطلبات أكبر من (اختياري)</label><input type="number" id="s-free-shipping" min="0" step="0.01"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__head"><h2>روابط التواصل الاجتماعي</h2></div>
+          <div class="field-row">
+            <div class="field"><label>Facebook</label><input type="url" id="s-social-facebook" placeholder="https://facebook.com/..."></div>
+            <div class="field"><label>Instagram</label><input type="url" id="s-social-instagram" placeholder="https://instagram.com/..."></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Twitter / X</label><input type="url" id="s-social-twitter"></div>
+            <div class="field"><label>WhatsApp</label><input type="url" id="s-social-whatsapp" placeholder="https://wa.me/..."></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__head"><h2>نص الفوتر (Footer)</h2></div>
+          <div class="field"><textarea id="s-footer-text" rows="2" placeholder="© 2026 المتجر. جميع الحقوق محفوظة."></textarea></div>
+        </div>
+
+        <button type="submit" class="btn btn--primary">حفظ الإعدادات</button>
+      </form>
+    </main>
+  </div>
+</div>
+
+<script type="module" src="../store/js/main.js"></script>
+<script type="module" src="js/admin-settings.js"></script>
+<script type="module">
+  import { adminLogout } from "./js/admin-auth.js";
+  document.getElementById("logout-btn").addEventListener("click", adminLogout);
+  document.getElementById("burger").addEventListener("click", () => document.getElementById("sidebar").classList.toggle("open"));
+</script>
+</body>
+</html>

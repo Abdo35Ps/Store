@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المتجر | تسوّق أونلاين بثقة</title>
+<meta name="description" content="متجر إلكتروني حديث لأفضل المنتجات بأسعار مميزة">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<!-- ===================== Header ===================== -->
+<header class="header">
+  <div class="container header__top">
+    <button class="icon-btn nav__toggle" data-nav-toggle aria-label="القائمة">☰</button>
+    <a href="index.html" class="brand"><span class="brand__mark">🛍️</span><span class="brand__text">المتجر</span></a>
+    <div class="search-bar">
+      <input type="text" id="global-search" placeholder="ابحث عن منتج...">
+      <button id="global-search-btn" aria-label="بحث">🔍</button>
+    </div>
+    <div class="header__actions">
+      <button class="icon-btn" data-theme-toggle title="الوضع الليلي/النهاري">🌙</button>
+      <a href="cart.html" class="icon-btn" title="السلة">🛒<span class="badge" data-cart-count>0</span></a>
+      <div data-notif-area></div>
+      <div data-auth-area></div>
+    </div>
+  </div>
+  <nav class="nav">
+    <div class="container">
+      <ul class="nav__menu" data-nav-menu id="category-nav">
+        <li><a href="index.html" class="active">الرئيسية</a></li>
+        <li><a href="products.html">كل المنتجات</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="container">
+    <!-- ===================== Hero ===================== -->
+    <section class="hero" id="hero-banner">
+      <div class="hero__content">
+        <span class="eyebrow">تسوّق الآن</span>
+        <h1>كل ما تحتاجه، في مكان واحد</h1>
+        <p>اكتشف أحدث المنتجات بأفضل الأسعار وتوصيل سريع لباب بيتك.</p>
+        <a href="products.html" class="btn btn--accent">تصفّح المنتجات</a>
+      </div>
+    </section>
+
+    <!-- ===================== Categories ===================== -->
+    <section class="section" id="categories-section">
+      <div class="section__head">
+        <h2>تسوّق حسب التصنيف</h2>
+      </div>
+      <div class="grid" id="categories-grid" style="grid-template-columns:repeat(6,1fr)"></div>
+    </section>
+
+    <!-- ===================== Featured ===================== -->
+    <section class="section" id="featured-section">
+      <div class="section__head">
+        <h2>منتجات مميزة</h2>
+        <a href="products.html?featured=1" class="see-all">عرض الكل ←</a>
+      </div>
+      <div class="grid" id="featured-grid"></div>
+    </section>
+
+    <!-- ===================== Latest ===================== -->
+    <section class="section" id="latest-section">
+      <div class="section__head">
+        <h2>أحدث المنتجات</h2>
+        <a href="products.html?sort=newest" class="see-all">عرض الكل ←</a>
+      </div>
+      <div class="grid" id="latest-grid"></div>
+    </section>
+
+    <!-- ===================== Offers ===================== -->
+    <section class="section" id="offers-section">
+      <div class="section__head">
+        <h2>🔥 عروض وخصومات</h2>
+        <a href="products.html?discount=1" class="see-all">عرض الكل ←</a>
+      </div>
+      <div class="grid" id="offers-grid"></div>
+    </section>
+  </div>
+</main>
+
+<!-- ===================== Footer ===================== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a href="index.html" class="brand"><span class="brand__mark">🛍️</span> المتجر</a>
+        <p id="footer-desc">وجهتك الأولى للتسوق الإلكتروني بجودة وثقة.</p>
+        <div class="footer__social" id="footer-social"></div>
+      </div>
+      <div>
+        <h4>روابط سريعة</h4>
+        <a href="index.html">الرئيسية</a>
+        <a href="products.html">المنتجات</a>
+        <a href="cart.html">السلة</a>
+        <a href="orders.html">طلباتي</a>
+      </div>
+      <div>
+        <h4>حسابي</h4>
+        <a href="login.html">تسجيل الدخول</a>
+        <a href="register.html">إنشاء حساب</a>
+        <a href="account.html">بياناتي</a>
+      </div>
+      <div>
+        <h4>تواصل معنا</h4>
+        <p class="muted" id="footer-phone" style="font-size:14px">—</p>
+        <p class="muted" id="footer-email" style="font-size:14px">—</p>
+        <p class="muted" id="footer-address" style="font-size:14px">—</p>
+      </div>
+    </div>
+    <div class="footer__bottom" id="footer-bottom-text">© 2026 المتجر. جميع الحقوق محفوظة.</div>
+  </div>
+</footer>
+
+<script type="module" src="js/main.js"></script>
+<script type="module" src="js/notifications.js"></script>
+<script type="module">
+  import { listenProducts, listenCategories, renderProductsGrid, skeletonCards, errorState } from "./js/products.js";
+  import { doc, getDoc, db } from "./js/firebase-config.js";
+  import { setCurrency } from "./js/main.js";
+
+  const featuredGrid = document.getElementById("featured-grid");
+  const latestGrid = document.getElementById("latest-grid");
+  const offersGrid = document.getElementById("offers-grid");
+  const catGrid = document.getElementById("categories-grid");
+  const catNav = document.getElementById("category-nav");
+  let currentProducts = [];
+  let currentCategories = [];
+
+  skeletonCards(featuredGrid, 4);
+  skeletonCards(latestGrid, 4);
+  skeletonCards(offersGrid, 4);
+
+  listenProducts((products) => {
+    currentProducts = products;
+    renderCategories();
+
+    const featured = products.filter(p => p.featured).slice(0, 8);
+    const latest = [...products].sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0, 8);
+    const offers = products.filter(p => p.oldPrice && p.oldPrice > p.price).slice(0, 8);
+
+    renderProductsGrid(featuredGrid, featured.length ? featured : products.slice(0,4));
+    renderProductsGrid(latestGrid, latest);
+    renderProductsGrid(offersGrid, offers.length ? offers : products.slice(0,4));
+  });
+
+  const baseNavHtml = catNav.innerHTML;
+
+  function renderCategories() {
+    if (!currentCategories.length) { catGrid.innerHTML = ""; return; }
+
+    catGrid.innerHTML = currentCategories.map(c => {
+      const productsCount = currentProducts.filter(p => p.categoryId === c.id).length;
+      return `
+        <a href="products.html?cat=${c.id}" class="cat-tile">
+          <img src="${c.image || 'https://via.placeholder.com/64'}" class="cat-tile__img" alt="${c.name}">
+          <div class="cat-tile__name">${c.name}</div>
+          <div class="cat-tile__count">${productsCount} منتج</div>
+        </a>`;
+    }).join("");
+
+    catNav.innerHTML = baseNavHtml + currentCategories.slice(0,6).map(c => `<li><a href="products.html?cat=${c.id}">${c.name}</a></li>`).join("");
+  }
+
+  listenCategories((cats) => {
+    currentCategories = cats;
+    renderCategories();
+  });
+
+  // Store settings (footer + currency)
+  getDoc(doc(db, "settings", "store")).then((s) => {
+    if (!s.exists()) return;
+    const d = s.data();
+    if (d.currency) setCurrency(d.currency);
+    if (d.description) document.getElementById("footer-desc").textContent = d.description;
+    if (d.phone) document.getElementById("footer-phone").textContent = "📞 " + d.phone;
+    if (d.email) document.getElementById("footer-email").textContent = "✉️ " + d.email;
+    if (d.address) document.getElementById("footer-address").textContent = "📍 " + d.address;
+    if (d.footerText) document.getElementById("footer-bottom-text").textContent = d.footerText;
+    if (d.social) {
+      const socialIcons = {
+        facebook: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 8h3V4h-3c-3.31 0-5 1.79-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9c0-.67.33-1 1-1z"/></svg>',
+        instagram: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg>',
+        twitter: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.9 2H22l-6.77 7.74L23.2 22h-6.24l-4.89-6.4L6.48 22H3.37l7.24-8.28L2.8 2h6.4l4.42 5.84L18.9 2zm-1.1 17.8h1.73L8.28 4.08H6.42L17.8 19.8z"/></svg>',
+        tiktok: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M14 3h3.2c.22 1.72 1.2 3.06 2.8 3.7v3.25a8.1 8.1 0 0 1-2.8-.86v6.22A5.69 5.69 0 1 1 12 9.64v3.43a2.4 2.4 0 1 0 2 2.24V3z"/></svg>',
+        whatsapp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.5 3.5A11.94 11.94 0 0 0 12 0C5.38 0 .01 5.37.01 12c0 2.11.55 4.17 1.6 5.99L0 24l6.17-1.59A11.94 11.94 0 0 0 12 24c6.62 0 12-5.37 12-12 0-3.2-1.25-6.21-3.5-8.5zM12 21.8c-1.83 0-3.62-.49-5.18-1.42l-.37-.22-3.66.94.98-3.57-.24-.37A9.75 9.75 0 1 1 12 21.8zm5.35-7.3c-.29-.15-1.72-.85-1.99-.95-.27-.1-.46-.15-.66.15-.19.29-.75.95-.92 1.14-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.43-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.15-.17.19-.29.29-.49.1-.19.05-.36-.02-.51-.07-.15-.66-1.58-.9-2.17-.24-.57-.48-.5-.66-.51h-.56c-.19 0-.49.07-.75.36-.26.29-1 1-1 2.44s1.03 2.83 1.17 3.02c.15.19 2.03 3.1 4.92 4.35.69.3 1.22.48 1.64.61.69.22 1.32.19 1.82.12.55-.08 1.72-.7 1.96-1.38.24-.68.24-1.27.17-1.39-.07-.12-.26-.19-.54-.34z"/></svg>',
+        link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 13a5 5 0 0 0 7.07 0l2-2A5 5 0 0 0 12 3.93l-1.15 1.15M14 11a5 5 0 0 0-7.07 0l-2 2A5 5 0 0 0 12 20.07l1.15-1.15"/></svg>'
+      };
+      document.getElementById("footer-social").innerHTML = Object.entries(d.social)
+        .filter(([,url]) => url)
+        .map(([k,url]) => {
+          let type = k.toLowerCase();
+          try {
+            const host = new URL(url).hostname.toLowerCase();
+            if (host.includes("facebook")) type = "facebook";
+            else if (host.includes("instagram")) type = "instagram";
+            else if (host.includes("twitter") || host === "x.com" || host.includes("x.com")) type = "twitter";
+            else if (host.includes("tiktok")) type = "tiktok";
+            else if (host.includes("whatsapp")) type = "whatsapp";
+          } catch {}
+          return `<a href="${url}" target="_blank" rel="noopener" aria-label="${type}">${socialIcons[type] || socialIcons.link}</a>`;
+        }).join("");
+    }
+    window.__STORE_SETTINGS__ = d;
+  }).catch(() => {});
+
+  // Search
+  function goSearch() {
+    const val = document.getElementById("global-search").value.trim();
+    location.href = "products.html" + (val ? `?q=${encodeURIComponent(val)}` : "");
+  }
+  document.getElementById("global-search-btn").addEventListener("click", goSearch);
+  document.getElementById("global-search").addEventListener("keydown", (e) => { if (e.key === "Enter") goSearch(); });
+</script>
+</body>
+</html>

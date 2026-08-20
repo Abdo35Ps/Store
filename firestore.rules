@@ -1,0 +1,104 @@
+rules_version = '2';
+
+// ============================================================================
+// Firestore Security Rules — قواعد أمان قاعدة البيانات
+// انسخ هذا الملف إلى: Firebase Console → Firestore Database → Rules
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // هل المستخدم الحالي أدمن؟ (موجود في مجموعة admins بنفس الـ uid)
+    function isAdmin() {
+      return request.auth != null &&
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // ------------------------------------------------------------------
+    // admins: قراءة فقط للمالك نفسه (للتحقق من صلاحيته)، لا كتابة من العميل إطلاقًا
+    // إضافة أدمن جديد تتم يدويًا من Firebase Console فقط
+    // ------------------------------------------------------------------
+    match /admins/{adminId} {
+      allow read: if isSignedIn() && request.auth.uid == adminId;
+      allow write: if false;
+    }
+
+    // ------------------------------------------------------------------
+    // products: قراءة عامة للجميع، الكتابة للأدمن فقط
+    // ------------------------------------------------------------------
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ------------------------------------------------------------------
+    // categories: قراءة عامة، كتابة للأدمن فقط
+    // ------------------------------------------------------------------
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ------------------------------------------------------------------
+    // banners: قراءة عامة، كتابة للأدمن فقط
+    // ------------------------------------------------------------------
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ------------------------------------------------------------------
+    // settings: قراءة عامة (لعرض بيانات المتجر بالفوتر)، كتابة للأدمن فقط
+    // ------------------------------------------------------------------
+    match /settings/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ------------------------------------------------------------------
+    // users: كل مستخدم يقرأ/يعدّل بياناته فقط، الأدمن يقرأ ويعدّل الجميع
+    // لا يُسمح للمستخدم بتعديل حقل role أو disabled بنفسه
+    // ------------------------------------------------------------------
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) &&
+                       request.resource.data.role == "user" &&
+                       request.resource.data.disabled == false;
+      allow update: if isAdmin() ||
+                       (isOwner(userId) &&
+                        request.resource.data.role == resource.data.role &&
+                        request.resource.data.disabled == resource.data.disabled);
+      allow delete: if isAdmin();
+    }
+
+    // ------------------------------------------------------------------
+    // orders: المستخدم ينشئ طلبه الخاص ويقرأ طلباته فقط، الأدمن يقرأ/يعدّل الكل
+    // المستخدم لا يمكنه تعديل الطلب بعد إنشائه (منع التلاعب بالحالة أو السعر)
+    // ------------------------------------------------------------------
+    match /orders/{orderId} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid
+                       && request.resource.data.status == "pending";
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ------------------------------------------------------------------
+    // reviews: قراءة عامة، المستخدم المسجل يضيف تقييمه فقط باسمه، الأدمن يحذف
+    // ------------------------------------------------------------------
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+    }
+  }
+}
