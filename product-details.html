@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">تفاصيل المنتج | المتجر</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="css/auth.css">
+<style>
+  .pd-layout{ display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start; }
+  .pd-gallery__main{ border-radius:var(--radius); overflow:hidden; aspect-ratio:1/1; background:var(--surface-2); margin-bottom:12px; }
+  .pd-gallery__main img{ width:100%; height:100%; object-fit:cover; }
+  .pd-gallery__thumbs{ display:flex; gap:10px; }
+  .pd-gallery__thumbs img{ width:70px; height:70px; border-radius:10px; object-fit:cover; cursor:pointer; border:2px solid transparent; }
+  .pd-gallery__thumbs img.active{ border-color:var(--primary); }
+  .pd-info h1{ font-size:26px; margin:0 0 8px; }
+  .pd-info .card__cat{ font-size:13px; }
+  .pd-prices{ display:flex; align-items:baseline; gap:12px; margin:14px 0; }
+  .pd-price{ font-size:28px; font-weight:900; color:var(--primary); }
+  .pd-old-price{ font-size:16px; color:var(--muted); text-decoration:line-through; }
+  .pd-stock{ font-size:13px; margin-bottom:16px; }
+  .pd-desc{ color:var(--muted); line-height:1.9; margin:18px 0; }
+  .pd-actions{ display:flex; align-items:center; gap:14px; margin-top:20px; }
+  .review-item{ border-bottom:1px solid var(--border); padding:16px 0; }
+  .review-item__head{ display:flex; justify-content:space-between; margin-bottom:6px; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container header__top">
+    <button class="icon-btn nav__toggle" data-nav-toggle aria-label="القائمة">☰</button>
+    <a href="index.html" class="brand"><span class="brand__mark">🛍️</span><span class="brand__text">المتجر</span></a>
+    <div class="search-bar"><input type="text" id="global-search" placeholder="ابحث عن منتج..."><button id="global-search-btn">🔍</button></div>
+    <div class="header__actions">
+      <button class="icon-btn" data-theme-toggle>🌙</button>
+      <a href="cart.html" class="icon-btn">🛒<span class="badge" data-cart-count>0</span></a>
+      <div data-auth-area></div>
+    </div>
+  </div>
+  <nav class="nav"><div class="container"><ul class="nav__menu" data-nav-menu>
+    <li><a href="index.html">الرئيسية</a></li><li><a href="products.html">كل المنتجات</a></li>
+  </ul></div></nav>
+</header>
+
+<main>
+  <div class="container section" id="pd-content">
+    <div class="pd-layout">
+      <div class="pd-gallery">
+        <div class="pd-gallery__main"><img id="pd-main-img" src="" alt=""></div>
+        <div class="pd-gallery__thumbs" id="pd-thumbs"></div>
+      </div>
+      <div class="pd-info">
+        <span class="card__cat" id="pd-cat"></span>
+        <h1 id="pd-name"></h1>
+        <div class="stars" id="pd-rating"></div>
+        <div class="pd-prices">
+          <span class="pd-price" id="pd-price"></span>
+          <span class="pd-old-price" id="pd-old-price"></span>
+          <span class="card__discount" id="pd-discount" style="display:none"></span>
+        </div>
+        <div class="pd-stock" id="pd-stock"></div>
+        <p class="pd-desc" id="pd-desc"></p>
+        <div class="pd-actions">
+          <div class="qty-control">
+            <button id="pd-dec">−</button>
+            <input type="number" id="pd-qty" value="1" min="1">
+            <button id="pd-inc">+</button>
+          </div>
+          <button class="btn btn--primary" id="pd-add-cart">أضف إلى السلة</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:60px">
+      <h2>تقييمات المستخدمين</h2>
+      <div id="pd-reviews" style="margin-top:16px"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer"><div class="container"><div class="footer__bottom">© 2026 المتجر. جميع الحقوق محفوظة.</div></div></footer>
+
+<script type="module" src="js/main.js"></script>
+<script type="module">
+  import { fetchProductById } from "./js/products.js";
+  import { db, collection, query, where, orderBy, getDocs } from "./js/firebase-config.js";
+  import { money, discountPct, addToCart, errorState, emptyState, formatDate } from "./js/main.js";
+
+  const id = new URLSearchParams(location.search).get("id");
+  const content = document.getElementById("pd-content");
+  let product = null;
+
+  if (!id) {
+    content.innerHTML = `<div class="state-box"><h3>المنتج غير موجود</h3><a href="products.html" class="btn btn--primary">العودة للمنتجات</a></div>`;
+  } else {
+    fetchProductById(id).then(async (p) => {
+      if (!p) {
+        content.innerHTML = `<div class="state-box"><h3>هذا المنتج غير متاح</h3><a href="products.html" class="btn btn--primary">العودة للمنتجات</a></div>`;
+        return;
+      }
+      product = p;
+      document.title = p.name + " | المتجر";
+      const images = p.images?.length ? p.images : [p.image || "https://via.placeholder.com/600"];
+      document.getElementById("pd-main-img").src = images[0];
+      document.getElementById("pd-thumbs").innerHTML = images.map((img, i) => `<img src="${img}" class="${i===0?"active":""}" data-img="${img}">`).join("");
+      document.querySelectorAll("[data-img]").forEach(t => t.addEventListener("click", () => {
+        document.getElementById("pd-main-img").src = t.dataset.img;
+        document.querySelectorAll("[data-img]").forEach(x => x.classList.remove("active"));
+        t.classList.add("active");
+      }));
+      document.getElementById("pd-cat").textContent = p.categoryName || "";
+      document.getElementById("pd-name").textContent = p.name;
+      document.getElementById("pd-price").textContent = money(p.price);
+      const disc = discountPct(p.price, p.oldPrice);
+      if (disc > 0) {
+        document.getElementById("pd-old-price").textContent = money(p.oldPrice);
+        document.getElementById("pd-discount").style.display = "inline-block";
+        document.getElementById("pd-discount").textContent = `خصم ${disc}%`;
+      }
+      const available = p.available !== false && (p.stock ?? 0) > 0;
+      const stockEl = document.getElementById("pd-stock");
+      stockEl.innerHTML = available
+        ? `<span style="color:var(--success)">✓ متوفر</span> — الكمية المتاحة: ${p.stock}`
+        : `<span style="color:var(--danger)">✕ غير متوفر حاليًا</span>`;
+      document.getElementById("pd-desc").textContent = p.description || "لا يوجد وصف لهذا المنتج.";
+      if (p.rating) {
+        document.getElementById("pd-rating").innerHTML = `${"★".repeat(Math.round(p.rating))}${"☆".repeat(5-Math.round(p.rating))} <span class="muted">(${p.reviewsCount||0} تقييم)</span>`;
+      }
+
+      const qtyInput = document.getElementById("pd-qty");
+      qtyInput.max = p.stock ?? 99;
+      document.getElementById("pd-inc").addEventListener("click", () => qtyInput.value = Math.min(Number(qtyInput.value)+1, p.stock ?? 99));
+      document.getElementById("pd-dec").addEventListener("click", () => qtyInput.value = Math.max(1, Number(qtyInput.value)-1));
+      const addBtn = document.getElementById("pd-add-cart");
+      if (!available) { addBtn.disabled = true; addBtn.textContent = "غير متوفر"; }
+      addBtn.addEventListener("click", () => addToCart(p, Number(qtyInput.value) || 1));
+
+      // Reviews
+      const revEl = document.getElementById("pd-reviews");
+      try {
+        const q = query(collection(db, "reviews"), where("productId", "==", id), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        const reviews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (!reviews.length) {
+          emptyState(revEl, { icon: "💬", title: "لا توجد تقييمات بعد", desc: "كن أول من يقيّم هذا المنتج." });
+        } else {
+          revEl.innerHTML = reviews.map(r => `
+            <div class="review-item">
+              <div class="review-item__head">
+                <strong>${r.userName || "مستخدم"}</strong>
+                <span class="stars">${"★".repeat(r.rating||0)}${"☆".repeat(5-(r.rating||0))}</span>
+              </div>
+              <p class="muted" style="margin:4px 0">${r.comment || ""}</p>
+              <span class="muted" style="font-size:12px">${formatDate(r.createdAt)}</span>
+            </div>`).join("");
+        }
+      } catch (e) { console.error(e); }
+    }).catch((e) => { console.error(e); errorState(content, "تعذر تحميل بيانات المنتج"); });
+  }
+
+  function goSearch() {
+    const val = document.getElementById("global-search").value.trim();
+    location.href = "products.html" + (val ? `?q=${encodeURIComponent(val)}` : "");
+  }
+  document.getElementById("global-search-btn").addEventListener("click", goSearch);
+  document.getElementById("global-search").addEventListener("keydown", (e) => { if (e.key === "Enter") goSearch(); });
+</script>
+</body>
+</html>
